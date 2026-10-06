@@ -3,6 +3,7 @@
 #include"Status.h"
 #include"Move.h"
 
+
 using namespace std;
 
 class GameManager {
@@ -22,13 +23,13 @@ public:
 	void TitleGame()
 	{
 		
-		cout << "GAME TITLE" << endl;
+		cout << "GAME TITLE" << endl<<endl;
 		cout << "0: Press TAB to start the game." << endl;
 	}
 
 	void Menu()
 	{
-		cout << "MENU" << endl;
+		cout << "MENU" << endl<<endl;
 		cout << "0: GAME PLAYING" << endl;	
 		cout << "1: BACK TO TITLE" << endl;
 
@@ -36,12 +37,17 @@ public:
 
 	void Game()
 	{
-		cout << "0: GAME PLAYING" << endl;
+		cout << "GAME PLAYING" << endl<<endl;
+	}
+
+	void Battle()
+	{
+		cout << "BATTLE" << endl<<endl;
 	}
 
 	void GameOver()
 	{
-		cout << "0: GAME OVER" << endl;
+		cout << "GAME OVER" << endl<<endl;
 
 	}
 };
@@ -64,22 +70,38 @@ void ClearConsole()
 	SetConsoleCursorPosition(h, homeCoords);
 }
 
+extern PlayerSettings hero; // 既に Status.h で extern 宣言されている
+extern EnemySettings slime; // 既に Status.h で extern 宣言されている
+
 int main()
 {
+	Map map;
+	Move playerMove(1, 1);
+	Player Player(hero); // Player クラスのインスタンスを作成
+	Enemy enemy(slime); // Enemy クラスのインスタンスを作成
+
+
 	enum scenenum
 	{
 		TITLE,
 		MENU,
 		GAME,
+		BATTLE,
 		GAMEOVER
 	};
 	int display = 1;
 	int now_push_tab = 0;
 	int now_push_space = 0;
+	int now_push_w = 0;
+	int now_push_a = 0;
+	int now_push_s = 0;
+	int now_push_d = 0;
 
 	int select_max = 0;
 	int select = 0;
 	int now_select = 0;
+
+	
 
 	scenenum currentScene = TITLE;
 
@@ -158,14 +180,122 @@ int main()
 			break;
 
 		case GAME:
+		{
 			if (display == 1)
 			{
 				ClearConsole();
 				GameManager::Instance().Game();
+
+				// プレイヤーがマップに配置されていることを確実にする
+				playerMove.PlacePlayer(map);
+				map.Map_Display();
+
+				cout << "now_select: " << now_select << endl;
+				display = 0;
+			}
+
+			// WASD キーの状態を取得（大文字の VK コードを使用）
+			bool wDown = (GetAsyncKeyState('W') & 0x8000) != 0;
+			bool aDown = (GetAsyncKeyState('A') & 0x8000) != 0;
+			bool sDown = (GetAsyncKeyState('S') & 0x8000) != 0;
+			bool dDown = (GetAsyncKeyState('D') & 0x8000) != 0;
+
+			// W
+			if (wDown && now_push_w == 0) {
+				now_push_w = 1;
+				bool moved = playerMove.MovePlayer('w', map);
+				if (moved) {
+					// 敵に遭遇したらバトルへ遷移
+					if (playerMove.HasEncounter()) {
+						currentScene = BATTLE;
+						display = 1;
+						playerMove.ClearEncounter();
+					}
+					else {
+						ClearConsole();
+						map.Map_Display();
+						display = 0;
+					}
+				}
+			}
+			else if (!wDown) {
+				now_push_w = 0;
+			}
+
+			// A
+			if (aDown && now_push_a == 0) {
+				now_push_a = 1;
+				bool moved = playerMove.MovePlayer('a', map);
+				if (moved) {
+					if (playerMove.HasEncounter()) {
+						currentScene = BATTLE;
+						display = 1;
+						playerMove.ClearEncounter();
+					}
+					else {
+						ClearConsole();
+						map.Map_Display();
+						display = 0;
+					}
+				}
+			}
+			else if (!aDown) {
+				now_push_a = 0;
+			}
+
+			// S
+			if (sDown && now_push_s == 0) {
+				now_push_s = 1;
+				bool moved = playerMove.MovePlayer('s', map);
+				if (moved) {
+					if (playerMove.HasEncounter()) {
+						currentScene = BATTLE;
+						display = 1;
+						playerMove.ClearEncounter();
+					}
+					else {
+						ClearConsole();
+						map.Map_Display();
+						display = 0;
+					}
+				}
+			}
+			else if (!sDown) {
+				now_push_s = 0;
+			}
+
+			// D
+			if (dDown && now_push_d == 0) {
+				now_push_d = 1;
+				bool moved = playerMove.MovePlayer('d', map);
+				if (moved) {
+					if (playerMove.HasEncounter()) {
+						currentScene = BATTLE;
+						display = 1;
+						playerMove.ClearEncounter();
+					}
+					else {
+						ClearConsole();
+						map.Map_Display();
+						display = 0;
+					}
+				}
+			}
+			else if (!dDown) {
+				now_push_d = 0;
+			}
+			break;
+		}
+		case BATTLE:
+			if (display == 1)
+			{
+				ClearConsole();
+				GameManager::Instance().Battle();
 				cout << "now_select: " << now_select << endl;
 				display = 0;
 			}
 			break;
+
 		case GAMEOVER:
 			if (display == 1)
 			{
