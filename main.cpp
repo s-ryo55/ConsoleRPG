@@ -2,6 +2,7 @@
 #include <windows.h>
 #include"Status.h"
 #include"Move.h"
+#include"Battle.h"
 
 
 using namespace std;
@@ -79,6 +80,7 @@ int main()
 	Move playerMove(1, 1);
 	Player Player(hero); // Player クラスのインスタンスを作成
 	Enemy enemy(slime); // Enemy クラスのインスタンスを作成
+	Battle battle; // 追加：戦闘処理オブジェクト
 
 
 	enum scenenum
@@ -291,8 +293,25 @@ int main()
 			{
 				ClearConsole();
 				GameManager::Instance().Battle();
-				cout << "now_select: " << now_select << endl;
-				display = 0;
+
+				// 戦闘処理を呼ぶ
+				battle.StartBattle(Player, enemy);
+
+				// 戦闘後：マップ上の敵（'E'）を削除（敵を倒した想定）
+				for (int i = 0; i < MAP_SIZE; ++i) {
+					for (int j = 0; j < MAP_SIZE; ++j) {
+						if (map.map[i][j] == 'E') {
+							map.map[i][j] = ' ';
+						}
+					}
+				}
+
+				// プレイヤー位置を再描画したい場合は再配置（必要なら）
+				playerMove.PlacePlayer(map);
+
+				// 戦闘後はゲーム画面に戻す
+				currentScene = GAME;
+				display = 1; // 次ループで再描画
 			}
 			break;
 
