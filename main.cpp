@@ -121,29 +121,25 @@ int main()
 		bool tabDown = (GetAsyncKeyState(VK_TAB) & 0x8000) != 0;
 		bool spaceDown = (GetAsyncKeyState(VK_SPACE) & 0x8000) != 0;
 
-		if (tabDown && now_push_tab == 0)
+		bool tabPressed = tabDown && now_push_tab == 0;
+		if (tabPressed)
 		{
 			now_push_tab = 1;
-			display = 1;
-			currentScene = static_cast<scenenum>(static_cast<int>(currentScene) + 1);
-			if (currentScene > GAMEOVER)
-			{
-				currentScene = TITLE;
-			}
 		}
-		else
+		else if (!tabDown)
 		{
-			if (!tabDown)
-			{
-				now_push_tab = 0;
-			}
+			now_push_tab = 0;
 		}
 
 		if (spaceDown && now_push_space == 0)
 		{
 			now_push_space = 1;
-			now_select = (now_select + 1) % select_max;
-			cout << "now_select: " << now_select << endl;
+			// select_max が 0 のときの剰余演算を防ぐ
+			if (select_max > 0)
+			{
+				now_select = (now_select + 1) % select_max;
+				cout << "now_select: " << now_select << endl;
+			}
 		}
 		else
 		{
@@ -156,39 +152,48 @@ int main()
 		switch (currentScene)
 		{
 		case TITLE:
+			select_max = 1;
 			if (display == 1)
 			{
 				ClearConsole();
 				GameManager::Instance().TitleGame();
 				cout << "now_select: " << now_select << endl;
-				select_max = 1;
 				display = 0;
+			}
+			if (tabPressed)
+			{
+				// タイトル画面で TAB を押したらメニューへ
+				now_select = 0;
+				currentScene = MENU;
+				display = 1;
 			}
 			break;
 
 		case MENU:
 		{
+			select_max = 2;
 			if (display == 1)
 			{
 				ClearConsole();
 				GameManager::Instance().Menu();
-			
 				cout << endl;
 				cout << "now_select: " << now_select << endl;
-
-				select_max = 2;
 				display = 0;
+			}
 
+			// SPACE で選んだ項目を TAB で決定する
+			if (tabPressed)
+			{
 				if (now_select == 0) {
-					// ゲームプレイに進む
 					currentScene = GAME;
-			
+					display = 1;
 				}
 				else if (now_select == 1) {
 					// タイトルに戻る
 					currentScene = TITLE;
+					now_select = 0;
+					display = 1;
 				}
-				
 			}
 			break;
 		}
@@ -263,7 +268,7 @@ int main()
 				else if (!keyDown) {
 					keyState = 0;
 				}
-			};
+				};
 
 			HandleMovement(wDown, now_push_w, 'w');
 			HandleMovement(aDown, now_push_a, 'a');
@@ -289,14 +294,14 @@ int main()
 
 					// 戦闘処理を呼ぶ（味方も一緒に参加）
 					battle.StartBattle(player, enemy, party.GetAllies());
-					
+
 					// 戦闘後の判定
 					if (enemy.Settings.HP <= 0) {
 						// 敵を倒した場合
 						map.DamageEnemyAt(battleEnemyRow, battleEnemyCol, enemy.Settings.ATK * 10);
 						cout << "敵を倒しました！マップに戻ります。" << endl;
 						Sleep(1500);
-						
+
 						// 敵が全滅したか確認
 						if (map.GetAliveEnemyCount() == 0) {
 							ClearConsole();
@@ -315,7 +320,7 @@ int main()
 						cout << "ゲームオーバー..." << endl;
 						Sleep(1500);
 						currentScene = GAMEOVER;
-					 display = 1;
+						display = 1;
 					}
 					else {
 						// 逃走に成功した場合
@@ -390,8 +395,14 @@ int main()
 			{
 				ClearConsole();
 				GameManager::Instance().GameOver();
-				cout << "now_select: " << now_select << endl;
+				cout << "TAB: タイトルへ戻る" << endl;
 				display = 0;
+			}
+			if (tabPressed)
+			{
+				currentScene = TITLE;
+				now_select = 0;
+				display = 1;
 			}
 			break;
 		}
