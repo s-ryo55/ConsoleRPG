@@ -9,6 +9,8 @@ class Move : public Map
 	int playerY;
 	int invalidStreak = 0; // 連続無効入力回数を保持
 	bool encounteredEnemy = false; // 敵と遭遇したか
+	bool encounteredBoss = false; // ボスと遭遇したか
+	char encounterType = '\0'; // 遭遇タイプ（'E', 'B', 'S', 'H', 'R'）
 
 public:
 
@@ -72,7 +74,7 @@ public:
 "正しい方向を選んでください。",
 "進める方向を選んでください。",
 "その方向では進めません！",
-"そこへは行けません！",
+"そこへの行けません！",
 "その先には進めません！",
 "この方向はダメみたいです！"
 		};
@@ -104,9 +106,22 @@ public:
 			// 成功したらカウントをリセット
 			invalidStreak = 0;
 
-			// もし移動先に敵 'E' がいたら遭遇フラグを立てる
-			if (map.map[newY][newX] == 'E') {
+			// 移動先に何があるかを確認
+			char targetChar = map.map[newY][newX];
+
+			// 敵か敵 'E'
+			if (targetChar == 'E') {
 				encounteredEnemy = true;
+				encounterType = 'E';
+			}
+			// ボス 'B'
+			else if (targetChar == 'B') {
+				encounteredBoss = true;
+				encounterType = 'B';
+			}
+			// 仲間キャラクター（'S', 'H', 'R'）
+			else if (targetChar == 'S' || targetChar == 'H' || targetChar == 'R') {
+				encounterType = targetChar;
 			}
 
 			// もともとプレイヤーがいた位置の表示を消す（プレイヤー記号と一致している場合のみ）
@@ -131,5 +146,25 @@ public:
 
 	// 敵遭遇フラグを参照/クリアするためのアクセサ
 	bool HasEncounter() const { return encounteredEnemy; }
-	void ClearEncounter() { encounteredEnemy = false; }
+	bool HasBossEncounter() const { return encounteredBoss; }
+	char GetEncounterType() const { return encounterType; }
+	bool HasAllyEncounter() const { 
+		return encounterType == 'S' || encounterType == 'H' || encounterType == 'R';
+	}
+
+	void ClearEncounter() { 
+		encounteredEnemy = false; 
+		encounteredBoss = false;
+		encounterType = '\0';
+	}
+
+	int GetPlayerRow() const
+	{
+		return playerY;
+	}
+
+	int GetPlayerCol() const
+	{
+		return playerX;
+	}
 };
