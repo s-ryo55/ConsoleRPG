@@ -10,6 +10,10 @@ class Move : public Map
 	int invalidStreak = 0; // 連続無効入力回数を保持
 	bool encounteredEnemy = false; // 敵と遭遇したか
 	bool encounteredBoss = false; // ボスと遭遇したか
+	bool encounteredWall = false; // 壁戦闘が発生したか
+	int wallHitCount = 0; // 壁にぶつかった回数
+	int wallRow = -1;
+	int wallCol = -1;
 	char encounterType = '\0'; // 遭遇タイプ（'E', 'B', 'S', 'H', 'R'）
 
 public:
@@ -137,7 +141,19 @@ public:
 			return true;
 		}
 		else {
-			// 移動阻害（壁など）も連続無効扱いにしてメッセージを変える
+			// 壁にぶつかった回数を数え、50回目で壁との戦闘を開始
+			if (newX >= 0 && newX < MAP_SIZE && newY >= 0 && newY < MAP_SIZE && map.map[newY][newX] == '#') {
+				if (!encounteredWall) {
+					wallHitCount++;
+					if (wallHitCount >= 50) {
+						encounteredWall = true;
+						wallRow = newY;
+						wallCol = newX;
+						wallHitCount = 0;
+						std::cout << "壁に50回ぶつかった！壁との戦闘開始！" << std::endl;
+					}
+				}
+			}
 			invalidStreak++;
 			std::cout << messages[(invalidStreak - 1) % msgCount] << std::endl;
 			return false;
@@ -147,6 +163,10 @@ public:
 	// 敵遭遇フラグを参照/クリアするためのアクセサ
 	bool HasEncounter() const { return encounteredEnemy; }
 	bool HasBossEncounter() const { return encounteredBoss; }
+	bool HasWallEncounter() const { return encounteredWall; }
+	int GetWallRow() const { return wallRow; }
+	int GetWallCol() const { return wallCol; }
+	void ClearWallEncounter() { encounteredWall = false; }
 	char GetEncounterType() const { return encounterType; }
 	bool HasAllyEncounter() const { 
 		return encounterType == 'S' || encounterType == 'H' || encounterType == 'R';

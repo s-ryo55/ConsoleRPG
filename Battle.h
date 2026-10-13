@@ -9,6 +9,7 @@
 #include <limits>
 #include <vector>
 #include <cstring>
+#include <windows.h>
 
 using namespace std;
 
@@ -80,6 +81,8 @@ public:
 			// プレイヤーの選択
 			cout << "[Player Turn]" << endl;
 			cout << "1: Attack  2: Defend  3: Run" << endl;
+			// 探索中などに押されたキーが残っていても、Choose の入力に混ざらないようにする
+			FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 			cout << "Choose: ";
 			int choice = 0;
 			if (!(cin >> choice)) {
@@ -136,6 +139,8 @@ public:
 					if (alliesSettings[i].HP > 0) {
 						cout << "\n[" << alliesSettings[i].Name << " のターン]" << endl;
 						cout << "1: Attack  2: Defend  3: Heal" << endl;
+						// 前の入力が味方の選択に残らないようにする
+						FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
 						cout << "Choose: ";
 						int allyChoice = 0;
 						if (!(cin >> allyChoice)) {
