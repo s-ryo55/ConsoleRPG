@@ -10,6 +10,7 @@
 #include <vector>
 #include <cstring>
 #include <windows.h>
+#include <conio.h>
 
 using namespace std;
 
@@ -31,6 +32,23 @@ private:
 		return "Normal";
 	}
 
+	// 数字キーで選択し、TABキーで決定する（Enterは使わない）
+	int ReadChoiceWithTab(int maxChoice) {
+		while (true) {
+			int key = _getch();
+			if (key >= '1' && key <= '0' + maxChoice) {
+				int choice = key - '0';
+				cout << choice << "\nTABキーで決定してください。" << endl;
+				while (true) {
+					int confirm = _getch();
+					if (confirm == 9) return choice;
+					if (confirm == 27) break;
+				}
+				cout << "Choose (1-" << maxChoice << "): ";
+			}
+		}
+	}
+
 public:
 	void StartBattle(Player& player, Enemy& enemy, const vector<Player>& allies = vector<Player>()) {
 		// シードは初回だけで十分
@@ -48,7 +66,7 @@ public:
 		// 表示用の遅延関数
 		auto pause = [](int ms) {
 			std::this_thread::sleep_for(std::chrono::milliseconds(ms));
-		};
+			};
 
 		// 味方のHP情報をコピー
 		vector<PlayerSettings> alliesSettings;
@@ -83,15 +101,8 @@ public:
 			cout << "1: Attack  2: Defend  3: Run" << endl;
 			// 探索中などに押されたキーが残っていても、Choose の入力に混ざらないようにする
 			FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-			cout << "Choose: ";
-			int choice = 0;
-			if (!(cin >> choice)) {
-				// 入力が不正ならクリアして再入力を促す
-				cin.clear();
-				cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-				cout << "無効な入力です。" << endl;
-				continue;
-			}
+			cout << "Choose (1-3): ";
+			int choice = ReadChoiceWithTab(3);
 
 			if (choice == 1) {
 				// 攻撃
@@ -141,14 +152,8 @@ public:
 						cout << "1: Attack  2: Defend  3: Heal" << endl;
 						// 前の入力が味方の選択に残らないようにする
 						FlushConsoleInputBuffer(GetStdHandle(STD_INPUT_HANDLE));
-						cout << "Choose: ";
-						int allyChoice = 0;
-						if (!(cin >> allyChoice)) {
-							// 入力が不正ならクリアして攻撃で処理
-							cin.clear();
-							cin.ignore((std::numeric_limits<std::streamsize>::max)(), '\n');
-							allyChoice = 1;
-						}
+						cout << "Choose (1-3): ";
+						int allyChoice = ReadChoiceWithTab(3);
 
 						const char* charType = GetCharacterType(alliesSettings[i].Name);
 
@@ -156,7 +161,7 @@ public:
 							// 攻撃
 							int base = alliesSettings[i].ATK - (enemy.Settings.DEF / 2);
 							if (base < 1) base = 1;
-							
+
 							int dmg = base;
 							bool crit = (std::rand() % 100) < 10;
 							bool ranger_boost = false;
@@ -177,8 +182,8 @@ public:
 							}
 
 							enemy.Settings.HP -= dmg;
-							cout << alliesSettings[i].Name << " attacks for " << dmg << " damage" 
-								<< (crit && !ranger_boost ? " (Critical!)" : "") 
+							cout << alliesSettings[i].Name << " attacks for " << dmg << " damage"
+								<< (crit && !ranger_boost ? " (Critical!)" : "")
 								<< (ranger_boost ? " (Ranger Boost x3!)" : "") << "." << endl;
 							if (enemy.Settings.HP <= 0) {
 								enemy.Settings.HP = 0;
@@ -195,14 +200,14 @@ public:
 							if (strcmp(charType, "Healer") == 0) {
 								int healAmount = alliesSettings[i].ATK * 2;
 								int maxHP = 700; // ヒーラーのデフォルトHP
-								
+
 								// 他のキャラを回復
 								bool healed = false;
 								for (size_t j = 0; j < alliesSettings.size(); ++j) {
 									if (j != i && alliesSettings[j].HP > 0 && alliesSettings[j].HP < maxHP) {
 										int oldHP = alliesSettings[j].HP;
 										alliesSettings[j].HP = min(alliesSettings[j].HP + healAmount, maxHP);
-										cout << alliesSettings[i].Name << " は " << alliesSettings[j].Name 
+										cout << alliesSettings[i].Name << " は " << alliesSettings[j].Name
 											<< " を " << (alliesSettings[j].HP - oldHP) << " 回復した！" << endl;
 										healed = true;
 										break;
@@ -216,7 +221,7 @@ public:
 									bool crit = (std::rand() % 100) < 10;
 									int dmg = crit ? base * 2 : base;
 									enemy.Settings.HP -= dmg;
-									cout << alliesSettings[i].Name << " attacks for " << dmg << " damage" 
+									cout << alliesSettings[i].Name << " attacks for " << dmg << " damage"
 										<< (crit ? " (Critical!)" : "") << "." << endl;
 									if (enemy.Settings.HP <= 0) {
 										enemy.Settings.HP = 0;
@@ -231,7 +236,7 @@ public:
 								bool crit = (std::rand() % 100) < 10;
 								int dmg = crit ? base * 2 : base;
 								enemy.Settings.HP -= dmg;
-								cout << alliesSettings[i].Name << " attacks for " << dmg << " damage" 
+								cout << alliesSettings[i].Name << " attacks for " << dmg << " damage"
 									<< (crit ? " (Critical!)" : "") << "." << endl;
 								if (enemy.Settings.HP <= 0) {
 									enemy.Settings.HP = 0;
@@ -246,7 +251,7 @@ public:
 							bool crit = (std::rand() % 100) < 10;
 							int dmg = crit ? base * 2 : base;
 							enemy.Settings.HP -= dmg;
-							cout << alliesSettings[i].Name << " attacks for " << dmg << " damage" 
+							cout << alliesSettings[i].Name << " attacks for " << dmg << " damage"
 								<< (crit ? " (Critical!)" : "") << "." << endl;
 							if (enemy.Settings.HP <= 0) {
 								enemy.Settings.HP = 0;
@@ -293,7 +298,7 @@ public:
 
 						int allyDmg = alliesDefending[i] ? (allyBase + 1) / 2 : allyBase;
 						alliesSettings[i].HP -= allyDmg;
-						cout << enemy.Settings.Name << " attacks " << alliesSettings[i].Name 
+						cout << enemy.Settings.Name << " attacks " << alliesSettings[i].Name
 							<< " for " << allyDmg << " damage." << endl;
 						if (alliesSettings[i].HP <= 0) {
 							alliesSettings[i].HP = 0;
