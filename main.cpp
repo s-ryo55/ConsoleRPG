@@ -172,28 +172,23 @@ int main()
 			{
 				ClearConsole();
 				GameManager::Instance().Menu();
-				cout << "0: GAME PLAYING" << endl;
-				cout << "1: BACK TO TITLE" << endl;
-				cout << endl;
-				cout << "キャラクター選択:" << endl;
-				cout << "0: ソルジャー (HP: 1200, ATK: 80, DEF: 70)" << endl;
-				cout << "1: ヒーラー   (HP: 700, ATK: 60, DEF: 60)" << endl;
-				cout << "2: レンジャー (HP: 800, ATK: 110, DEF: 40)" << endl;
+			
 				cout << endl;
 				cout << "now_select: " << now_select << endl;
 
-				select_max = 3;
+				select_max = 2;
 				display = 0;
 
 				if (now_select == 0) {
-					hero = soldier;
+					// ゲームプレイに進む
+					currentScene = GAME;
+			
 				}
 				else if (now_select == 1) {
-					hero = healer;
+					// タイトルに戻る
+					currentScene = TITLE;
 				}
-				else if (now_select == 2) {
-					hero = ranger;
-				}
+				
 			}
 			break;
 		}
