@@ -125,13 +125,20 @@
   <ItemGroup>
     <ClCompile Include="ConsoleRPG.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="status.cpp" />
+    <ClCompile Include="Model\status.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Battle.h" />
-    <ClInclude Include="Map.h" />
-    <ClInclude Include="Move.h" />
-    <ClInclude Include="Status.h" />
+    <ClInclude Include="Model\Status.h" />
+    <ClInclude Include="Model\Map.h" />
+    <ClInclude Include="Model\Move.h" />
+    <ClInclude Include="Model\BattleModel.h" />
+    <ClInclude Include="View\ConsoleView.h" />
+    <ClInclude Include="View\MapView.h" />
+    <ClInclude Include="View\StatusView.h" />
+    <ClInclude Include="View\BattleView.h" />
+    <ClInclude Include="View\GameView.h" />
+    <ClInclude Include="Controller\BattleController.h" />
+    <ClInclude Include="Controller\GameController.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

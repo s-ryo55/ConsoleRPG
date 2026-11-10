@@ -1,42 +1,58 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="ソース ファイル">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="Model">
+      <UniqueIdentifier>{87FF273E-B537-4C80-831E-5D8C8F47A09D}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ヘッダー ファイル">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    <Filter Include="View">
+      <UniqueIdentifier>{38E6B5B0-EB88-4DB3-992F-3602DA4616B5}</UniqueIdentifier>
     </Filter>
-    <Filter Include="リソース ファイル">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="Controller">
+      <UniqueIdentifier>{6DD01F3E-AF61-4724-91C5-47E76B6D08F2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ConsoleRPG.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
-    <ClCompile Include="status.cpp">
-      <Filter>ソース ファイル</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
-      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="Model\status.cpp">
+      <Filter>Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Status.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Model\Status.h">
+      <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Move.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Model\Map.h">
+      <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Map.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Model\Move.h">
+      <Filter>Model</Filter>
     </ClInclude>
-    <ClInclude Include="Battle.h">
-      <Filter>ヘッダー ファイル</Filter>
+    <ClInclude Include="Model\BattleModel.h">
+      <Filter>Model</Filter>
+    </ClInclude>
+    <ClInclude Include="View\ConsoleView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="View\MapView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="View\StatusView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="View\BattleView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="View\GameView.h">
+      <Filter>View</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\BattleController.h">
+      <Filter>Controller</Filter>
+    </ClInclude>
+    <ClInclude Include="Controller\GameController.h">
+      <Filter>Controller</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
